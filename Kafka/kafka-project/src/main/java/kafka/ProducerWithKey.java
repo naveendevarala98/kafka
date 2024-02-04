@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class ProducerWithCallback {
-    private static final Logger log = LoggerFactory.getLogger(ProducerWithCallback.class.getSimpleName());
-    public static void main(String[] args) {
+public class ProducerWithKey {
+    private static final Logger log = LoggerFactory.getLogger(ProducerWithKey.class.getSimpleName());
+    public static void main(String[] args) throws InterruptedException {
 
         //1. create producer properties
         Properties properties = new Properties();
@@ -29,29 +29,32 @@ public class ProducerWithCallback {
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
 
-        //sticky partition - batch wise data sends to topic, so goes to same partition - improves performance
-        //round robin partition - randomly allocates to partition of the topic
-        for(int i=0;i<10;i++) {
+        for (int j=0;j<2;j++) {
+            for (int i = 0; i < 10; i++) {
 
-            //3.send data
-            ProducerRecord<String, String> producerRecord =
-                    new ProducerRecord<>("demo","hello world"+i);
+                String topic = "demo";
+                String key = "id_" + i; // same key will go to same partition
+                String value = "hello world " + i;
 
-            //send data - async
-            producer.send(producerRecord, new Callback() {
-                @Override
-                public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-                    if(e==null){
-                        log.info("received /n"+
-                                "Topic "+recordMetadata.topic()+"\n"+
-                                "Partition "+recordMetadata.partition()+"\n"+
-                                "Offset "+recordMetadata.offset()+"\n"+
-                                "Timestamp "+recordMetadata.timestamp());
-                    }else{
-                        log.info("exception");
+                //3.send data
+                ProducerRecord<String, String> producerRecord =
+                        new ProducerRecord<>(topic, key, value);
+
+                //send data - async
+                producer.send(producerRecord, new Callback() {
+                    @Override
+                    public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                        if (e == null) {
+                            log.info("received " +
+                                    "key " + key +" | "+
+                                    "partition " + recordMetadata.partition() + "\n");
+                        } else {
+                            log.info("exception");
+                        }
                     }
-                }
-            });
+                });
+            }
+            Thread.sleep(100);
         }
 
 
