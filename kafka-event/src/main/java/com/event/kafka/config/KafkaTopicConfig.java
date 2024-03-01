@@ -15,4 +15,12 @@ public class KafkaTopicConfig {
                 //.partitions() - to create topic
                 .build();
     }
+
+    @Bean
+    public NewTopic createtopic_json(){
+        return TopicBuilder
+                .name("topic1_json")
+                //.partitions() - to create topic
+                .build();
+    }
 }
