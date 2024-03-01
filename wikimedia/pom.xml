@@ -15,6 +15,7 @@
 	<description>wikimedia project</description>
 	<modules>
 		<module>kafka-producer-wikimedia</module>
+		<module>Kafka-consumer-wikimedia</module>
 	</modules>
 	<packaging>pom</packaging>
 	<properties>
