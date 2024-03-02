@@ -23,4 +23,13 @@ public class KafkaTopicConfig {
                 //.partitions() - to create topic
                 .build();
     }
+
+    @Bean
+    public NewTopic createtopic_partition(){
+        return TopicBuilder
+                .name("topic1_partition")
+                .partitions(5) //- to create topic
+                .replicas(1)
+                .build();
+    }
 }
